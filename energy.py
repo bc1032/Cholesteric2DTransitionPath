@@ -56,84 +56,61 @@ def calcenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma
                     Q5[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 4]
 
                 if t != 0 or t != Lt-1:
-                    timeen += (sig*((-Q1[x,z,t-1] + Q1[x,z,t+1])**2/(4.*dt**2)\
-                            + (-Q2[x,z,t-1] + Q2[x,z,t+1])**2/(2.*dt**2)\
-                            + (-Q3[x,z,t-1] + Q3[x,z,t+1])**2/(2.*dt**2) + \
-                            (-Q4[x,z,t-1] + Q4[x,z,t+1])**2/(4.*dt**2)\
-                            + (-(-Q1[x,z,t-1] + Q1[x,z,t+1])/(2.*dt) - (-Q4[x,z,t-1]\
-                            + Q4[x,z,t+1])/(2.*dt))**2 + \
-                            (-Q5[x,z,t-1] + Q5[x,z,t+1])**2/(2.*dt**2)))/2.
-
-                if z == 0:
-                    Q1[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz]
-                    Q2[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 1]
-                    Q3[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 2]
-                    Q4[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 3]
-                    Q5[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 4]
-
-
-                    surface += 0.5*ws*((Q1[x,z,t]-Qt1)**2 + 2*(Q2[x,z,t]-Qt2)**2 \
-                    + 2*(Q3[x,z,t]-Qt3)**2+(Qt1 + Qt4 - Q1[x,z,t] - Q4[x,z,t])**2 \
-                    + (Q4[x,z,t] - Qt4)**2 +2*(Q5[x,z,t] - Qt5)**2 )
-
-                    bulk += -(a*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2\
-                            + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)) + \
-                             c*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2\
-                             + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)**2 + \
-                             b*(Q1[x,z,t]**2*Q4[x,z,t] + (-Q2[x,z,t]**2 + Q3[x,z,t]**2)*Q4[x,z,t]\
-                             - 2*Q2[x,z,t]*Q3[x,z,t]*Q5[x,z,t]\
-                             + Q1[x,z,t]*(-Q2[x,z,t]**2 + Q4[x,z,t]**2 + Q5[x,z,t]**2))
-                if z == Lz-1:
-                    Q1[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz]
-                    Q2[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 1]
-                    Q3[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 2]
-                    Q4[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 3]
-                    Q5[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 4]
-
-
-                    surface += 0.5*ws*( (Q1[x,z,t]-Qt1)**2 + 2*(Q2[x,z,t]-Qt2)**2 \
-                    + 2*(Q3[x,z,t]-Qt3)**2+(Qt1 + Qt4 - Q1[x,z,t] - Q4[x,z,t])**2 \
-                    + (Q4[x,z,t] - Qt4)**2 +2*(Q5[x,z,t] - Qt5)**2 )
-
-                    bulk += -(a*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2\
-                            + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)) + \
-                             c*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2\
-                             + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)**2 + \
-                             b*(Q1[x,z,t]**2*Q4[x,z,t] + (-Q2[x,z,t]**2 + Q3[x,z,t]**2)*Q4[x,z,t]\
-                             - 2*Q2[x,z,t]*Q3[x,z,t]*Q5[x,z,t]\
-                             + Q1[x,z,t]*(-Q2[x,z,t]**2 + Q4[x,z,t]**2 + Q5[x,z,t]**2))
-
+                    timeen += (sig*((Q1[x,z,t-1] - Q1[x,z,t+1])**2 + 2*(Q2[x,z,t-1] - Q2[x,z,t+1])**2\
+                    + 2*(Q3[x,z,t-1] - Q3[x,z,t+1])**2 + (Q4[x,z,t-1] - Q4[x,z,t+1])**2 + \
+                    (Q1[x,z,t-1] - Q1[x,z,t+1] + Q4[x,z,t-1] - Q4[x,z,t+1])**2 + 2*(Q5[x,z,t-1]\
+                    - Q5[x,z,t+1])**2))/(8.*dt**2)
+                #
+                # if z == 0:
+                #     Q1[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz]
+                #     Q2[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 1]
+                #     Q3[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 2]
+                #     Q4[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 3]
+                #     Q5[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 4]
+                #
+                #
+                #     surface += 0.5*ws*((Q1[x,z,t]-Qt1)**2 + 2*(Q2[x,z,t]-Qt2)**2 \
+                #     + 2*(Q3[x,z,t]-Qt3)**2+(Qt1 + Qt4 - Q1[x,z,t] - Q4[x,z,t])**2 \
+                #     + (Q4[x,z,t] - Qt4)**2 +2*(Q5[x,z,t] - Qt5)**2 )
+                #
+                #     # bulk += -(a*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)) + \
+                #     #         c*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)**2 + \
+                #     #         b*(Q1[x,z,t]**2*Q4[x,z,t] + (-Q2[x,z,t]**2 + Q3[x,z,t]**2)*Q4[x,z,t] - 2*Q2[x,z,t]*Q3[x,z,t]*Q5[x,z,t] +\
+                #     #         Q1[x,z,t]*(-Q2[x,z,t]**2 + Q4[x,z,t]**2 + Q5[x,z,t]**2))
+                # if z == Lz-1:
+                #     Q1[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz]
+                #     Q2[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 1]
+                #     Q3[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 2]
+                #     Q4[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 3]
+                #     Q5[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 4]
+                #
+                #
+                #     surface += 0.5*ws*( (Q1[x,z,t]-Qt1)**2 + 2*(Q2[x,z,t]-Qt2)**2 \
+                #     + 2*(Q3[x,z,t]-Qt3)**2+(Qt1 + Qt4 - Q1[x,z,t] - Q4[x,z,t])**2 \
+                #     + (Q4[x,z,t] - Qt4)**2 +2*(Q5[x,z,t] - Qt5)**2 )
+                #
+                #     bulk += -(a*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)) + \
+                #             c*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)**2 + \
+                #             b*(Q1[x,z,t]**2*Q4[x,z,t] + (-Q2[x,z,t]**2 + Q3[x,z,t]**2)*Q4[x,z,t] - 2*Q2[x,z,t]*Q3[x,z,t]*Q5[x,z,t] +\
+                #             Q1[x,z,t]*(-Q2[x,z,t]**2 + Q4[x,z,t]**2 + Q5[x,z,t]**2))
                 else:
 
+                    bulk += -(a*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)) + \
+                            c*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)**2 + \
+                            b*(Q1[x,z,t]**2*Q4[x,z,t] + (-Q2[x,z,t]**2 + Q3[x,z,t]**2)*Q4[x,z,t] - 2*Q2[x,z,t]*Q3[x,z,t]*Q5[x,z,t] +\
+                            Q1[x,z,t]*(-Q2[x,z,t]**2 + Q4[x,z,t]**2 + Q5[x,z,t]**2))
 
-                    bulk += -(a*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2\
-                            + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)) + \
-                             c*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2\
-                             + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2)**2 + \
-                             b*(Q1[x,z,t]**2*Q4[x,z,t] + (-Q2[x,z,t]**2 + Q3[x,z,t]**2)*Q4[x,z,t]\
-                             - 2*Q2[x,z,t]*Q3[x,z,t]*Q5[x,z,t]\
-                             + Q1[x,z,t]*(-Q2[x,z,t]**2 + Q4[x,z,t]**2 + Q5[x,z,t]**2))
+                    twist += (kt*(dx**2*(4*dz*q0*Q1[x,z,t] + Q2[x,z01,t] - Q2[x,z+1,t])**2 + dz**2*(-Q2[xl,z,t] + Q2[xr,z,t] + 4*dx*q0*Q3[x,z,t])**2 +\
+                            (dx*Q1[x,z-1,t] - dx*Q1[x,z+1,t] + dz*(-4*dx*q0*Q2[x,z,t] - Q3[xl,z,t] + Q3[xr,z,t]))**2 + \
+                            dx**2*(4*dz*q0*Q2[x,z,t] + Q4[x,z-1,t] - Q4[x,z+1,t])**2 + dz**2*(-Q4[xl,z,t] + Q4[xr,z,t] + 4*dx*q0*Q5[x,z,t])**2 - \
+                            32*dx**2*dz**2*q0**2*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q1[x,z,t]*Q4[x,z,t] + Q4[x,z,t]**2 + Q5[x,z,t]**2) + \
+                            (dx*(-Q3[x,z-1,t] + Q3[x,z+1,t]) + dz*(-Q1[xl,z,t] + Q1[xr,z,t] - Q4[xl,z,t] + Q4[xr,z,t] + 4*dx*q0*Q5[x,z,t]))**2 + \
+                            dx**2*(4*dz*q0*Q3[x,z,t] + Q5[x,z-1,t] - Q5[x,z+1,t])**2 + dz**2*(4*dx*q0*(Q1[x,z,t] + Q4[x,z,t]) + Q5[xl,z,t] - Q5[xr,z,t])**2 +\
+                            (dx*Q2[x,z-1,t] - dx*Q2[x,z+1,t] + dz*(-4*dx*q0*Q4[x,z,t] - Q5[xl,z,t] + Q5[xr,z,t]))**2))/(8.*dx**2*dz**2)
 
-                    twist += (kt*((-2*q0*Q1[x,z,t] + (-Q2[x,z-1,t] + Q2[x,z+1,t])/(2.*dz))**2\
-                            + ((-Q2[xl,z,t] + Q2[xr,z,t])/(2.*dx) + 2*q0*Q3[x,z,t])**2 +
-                            ((-Q1[x,z-1,t] + Q1[x,z+1,t])/(2.*dz) + 2*q0*Q2[x,z,t]\
-                            - (-Q3[xl,z,t] + Q3[xr,z,t])/(2.*dx))**2 +
-                            (-2*q0*Q2[x,z,t] + (-Q4[x,z-1,t] + Q4[x,z+1,t])/(2.*dz))**2\
-                            + ((-Q4[xl,z,t] + Q4[xr,z,t])/(2.*dx) + 2*q0*Q5[x,z,t])**2 +
-                            ((-Q1[xl,z,t] + Q1[xr,z,t])/(2.*dx) + (-Q3[x,z-1,t] + Q3[x,z+1,t])/(2.*dz)\
-                            + (-Q4[xl,z,t] + Q4[xr,z,t])/(2.*dx) + 2*q0*Q5[x,z,t])**2 -\
-                            8*q0**2*(Q1[x,z,t]**2 + Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q1[x,z,t]*Q4[x,z,t]\
-                             + Q4[x,z,t]**2 + Q5[x,z,t]**2) +
-                            (-2*q0*Q3[x,z,t] + (-Q5[x,z-1,t] + Q5[x,z+1,t])/(2.*dz))**2 + \
-                            ((-Q2[x,z-1,t] + Q2[x,z+1,t])/(2.*dz) + 2*q0*Q4[x,z,t] - (-Q5[xl,z,t]\
-                            + Q5[xr,z,t])/(2.*dx))**2 + \
-                            (-2*q0*(Q1[x,z,t] + Q4[x,z,t]) + (-Q5[xl,z,t] + Q5[xr,z,t])/(2.*dx))**2))/2.
-
-                    splay += (ks*(((-Q1[xl,z,t] + Q1[xr,z,t])/(2.*dx) + (-Q3[x,z-1,t]\
-                            + Q3[x,z+1,t])/(2.*dz))**2 + (-(-Q1[x,z-1,t] + Q1[x,z+1,t])/(2.*dz)\
-                            + (-Q3[xl,z,t] + Q3[xr,z,t])/(2.*dx) - (-Q4[x,z-1,t]\
-                            + Q4[x,z+1,t])/(2.*dz))**2 + ((-Q2[xl,z,t] + Q2[xr,z,t])/(2.*dx)\
-                            + (-Q5[x,z-1,t] + Q5[x,z+1,t])/(2.*dz))**2))/2.
+                    splay += (ks*((dz*Q1[xl,z,t] - dz*Q1[xr,z,t] + dx*(Q3[x,z-1,t] - Q3[x,z+1,t]))**2 + \
+                            (dz*(-Q3[xl,z,t] + Q3[xr,z,t]) + dx*(Q1[x,z-1,t] - Q1[x,z+1,t] + Q4[x,z-1,t] - Q4[x,z+1,t]))**2 +\
+                            (dz*Q2[xl,z,t] - dz*Q2[xr,z,t] + dx*(Q5[x,z-1,t] - Q5[x,z+1,t]))**2))/(8.*dx**2*dz**2)
 
     energy = (bulk + splay + twist + timeen + surface) #/ (Lz*Lt)
 
@@ -310,10 +287,10 @@ def writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamm
     energy = (bulk + splay + twist + timeen + surface)# / (Lz*Lt)
 
     calculategrad.calcgrad(guess,original,GradE,sig,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/energyevolution.dat" % (ks,kt,a,b,c,sig), enarrayinit)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/bulkevolution.dat" % (ks,kt,a,b,c,sig), bulkenarr)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/twistevolution.dat" % (ks,kt,a,b,c,sig), twistenarr)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/splayevolution.dat" % (ks,kt,a,b,c,sig), splayenarr)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/timeevolution.dat" % (ks,kt,a,b,c,sig), timeenarr)
+    np.savetxt("energyevolution.dat", enarrayinit)
+    np.savetxt("bulkevolution.dat", bulkenarr)
+    np.savetxt("twistevolution.dat", twistenarr)
+    np.savetxt("splayevolution.dat", splayenarr)
+    np.savetxt("timeevolution.dat" , timeenarr)
 
     return(energy,GradE)

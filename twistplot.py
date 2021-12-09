@@ -33,7 +33,7 @@ def calcen(sig,ks,kt,a,b,c):
     a=3.0e0
     b=2.0e0
     c=1.0e0
-    guess = np.loadtxt("ks%ekt%eabc%e%e%esig%d/energyarray.dat" % (ks,kt,a,b,c,sig))
+    guess = np.loadtxt("energyarray.dat" % (ks,kt,a,b,c,sig))
     analyse.analysis(lx,lz,lt,ks,kt,a,b,c,sig)
     #analyse.writeenergy(guess,sig,lz,lt,ks,kt,a,b,c)
     #while ks <= 1e8:
@@ -71,7 +71,7 @@ def plotaskskt(sig,ks,kt,a,b,c):
         ks = 1*10**i
         kt = 1*10**i
 
-        enbi = np.loadtxt("ks%ekt%eabc%e%e%esig%d/twistevolution.dat" % (ks,kt,a,b,c,sig))
+        enbi = np.loadtxt("twistevolution.dat" % (ks,kt,a,b,c,sig))
         enbiarr.append(np.max(enbi[1:lt-1]))
         power.append(i)
         plt.plot(enbi, label = '$10^{%d}$' % i, color=colors[i])
@@ -103,7 +103,7 @@ def plotaskskt(sig,ks,kt,a,b,c):
         ks = 1*10**i
         kt = 1*10**i
 
-        enbi = np.loadtxt("ks%ekt%eabc%e%e%esig%d/splayevolution.dat" % (ks,kt,a,b,c,sig))
+        enbi = np.loadtxt("splayevolution.dat" % (ks,kt,a,b,c,sig))
         enbiarr.append(np.max(enbi[2:lt-2]))
         power.append(i)
         plt.plot(enbi, label = '$10^{%d}$' % i, color=colors[i])
@@ -130,7 +130,7 @@ def plotaskskt(sig,ks,kt,a,b,c):
         ks = 1*10**i
         kt = 1*10**i
 
-        enbi = np.loadtxt("ks%ekt%eabc%e%e%esig%d/energyevolution.dat" % (ks,kt,a,b,c,sig))
+        enbi = np.loadtxt("energyevolution.dat" % (ks,kt,a,b,c,sig))
         enbiarr.append(np.max(enbi[2:lt-2]))
         power.append(i)
         plt.plot(enbi, label = '$10^{%d}$' % i, color=colors[i])

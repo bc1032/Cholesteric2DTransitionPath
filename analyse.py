@@ -10,22 +10,137 @@ import math as m
 import cmath
 from mpl_toolkits.mplot3d import Axes3D
 
-os.chdir('/home/bc1032/Desktop/Work/Cholesterics/2DLBFGS/BlueCrystal')
+def curl(lz,lx,lt):
 
-def analysis(lx,lz,lt,ks,kt,a,b,c,sig):
+    M = []
+    data = np.loadtxt('energyarray.dat')
+    #data = np.loadtxt('ftest.csv')
+    #data = np.(lz,lx)
+    i=1
+    n=0
+
+    if not os.path.exists('curl'):
+        os.makedirs('curl')
+
+    if not os.path.exists('curlvids'):
+        os.makedirs('curlvids')
+
+    if not os.path.exists('curlgraphs'):
+        os.makedirs('curlgraphs')
+
+    fcurl = open("curl/curl.dat",'w')
+
+    for t in range(0,lt):
+        if t % 20 == 0:
+            print(t)
+        for i in range(0,lx):
+            for k in range(0,lz):
+
+                if i == 0:
+                    xl = lx-1
+                    xr = i + 1
+                elif i == lx-1:
+                    xl = lx-2
+                    xr = i-1
+                else:
+                    xl = i-1
+                    xr = i+1
+
+                za = k+1
+                zb = k-1
+
+                indexz = np.mod(int(i), lz)
+                indexx = int(int(i)/lz)
+                #print(5*i*lx + 5*k + 5*t*lx*lz)
+                Q1 = data[5*i*lz + 5*k + 5*t*lx*lz]
+                Q2 = data[5*i*lz + 5*k + 5*t*lx*lz + 1]
+                Q3 = data[5*i*lz + 5*k + 5*t*lx*lz + 2]
+                Q4 = data[5*i*lz + 5*k + 5*t*lx*lz + 3]
+                Q5 = data[5*i*lz + 5*k + 5*t*lx*lz + 4]
+                curlq = 0.0
+                M = np.array([[Q1,Q2,Q3],[Q2,Q4,Q5],[Q3,Q5,-Q1-Q4]])
+
+                #Q1R = data[5*xr*lz + 5*k + 5*t*lx*lz]
+
+                Q1R = data[5*xr*lz + 5*k + 5*t*lx*lz]
+                Q2R = data[5*xr*lz + 5*k + 5*t*lx*lz + 1]
+                Q3R = data[5*xr*lz + 5*k + 5*t*lx*lz + 2]
+                Q4R = data[5*xr*lz + 5*k + 5*t*lx*lz + 3]
+                Q5R = data[5*xr*lz + 5*k + 5*t*lx*lz + 4]
+
+                Q1L = data[5*xl*lz + 5*k + 5*t*lx*lz]
+                Q2L = data[5*xl*lz + 5*k + 5*t*lx*lz + 1]
+                Q3L = data[5*xl*lz + 5*k + 5*t*lx*lz + 2]
+                Q4L = data[5*xl*lz + 5*k + 5*t*lx*lz + 3]
+                Q5L = data[5*xl*lz + 5*k + 5*t*lx*lz + 4]
+
+                ML = np.array([[Q1L,Q2L,Q3L],[Q2L,Q4L,Q5L],[Q3L,Q5L,-Q1L-Q4L]])
+                MR = np.array([[Q1R,Q2R,Q3R],[Q2R,Q4R,Q5R],[Q3R,Q5R,-Q1R-Q4R]])
+
+                lciv = np.array([[[0,0,0],[0,0,1],[0,-1,0]], [[0,0,-1],[0,0,0],[1,0,0]],[[0,1,0],[-1,0,0],[0,0,0]]])
+                if k == 0:
+                    Q1F = -(3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz] + 2.0*data[5*i*lz + 5*(k+1) + 5*t*lx*lz] - (1.0/2.0)*data[5*i*lz + 5*(k+2) + 5*t*lx*lz]
+                    Q2F = -(3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz + 1] + 2.0*data[5*i*lz + 5*(k+1) + 5*t*lx*lz + 1] - (1.0/2.0)*data[5*i*lz + 5*(k+2) + 5*t*lx*lz + 1]
+                    Q3F = -(3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz + 2] + 2.0*data[5*i*lz + 5*(k+1) + 5*t*lx*lz + 2] - (1.0/2.0)*data[5*i*lz + 5*(k+2) + 5*t*lx*lz + 2]
+                    Q4F = -(3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz + 3] + 2.0*data[5*i*lz + 5*(k+1) + 5*t*lx*lz + 3] - (1.0/2.0)*data[5*i*lz + 5*(k+2) + 5*t*lx*lz + 3]
+                    Q5F = -(3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz + 4] + 2.0*data[5*i*lz + 5*(k+1) + 5*t*lx*lz + 4] - (1.0/2.0)*data[5*i*lz + 5*(k+2) + 5*t*lx*lz + 4]
+                    MZ = np.array([[Q1F,Q2F,Q3F],[Q2F,Q4F,Q5F],[Q3F,Q5F,-Q1F-Q4F]])
+                elif k == lz - 1:
+                    Q1B = (3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz] - 2.0*data[5*i*lz + 5*(k-1) + 5*t*lx*lz] + (1.0/2.0)*data[5*i*lz + 5*(k-2) + 5*t*lx*lz]
+                    Q2B = (3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz + 1] - 2.0*data[5*i*lz + 5*(k-1) + 5*t*lx*lz + 1] + (1.0/2.0)*data[5*i*lz + 5*(k-2) + 5*t*lx*lz + 1]
+                    Q3B = (3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz + 2] - 2.0*data[5*i*lz + 5*(k-1) + 5*t*lx*lz + 2] + (1.0/2.0)*data[5*i*lz + 5*(k-2) + 5*t*lx*lz + 2]
+                    Q4B = (3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz + 3] - 2.0*data[5*i*lz + 5*(k-1) + 5*t*lx*lz + 3] + (1.0/2.0)*data[5*i*lz + 5*(k-2) + 5*t*lx*lz + 3]
+                    Q5B = (3.0/2.0)*data[5*i*lz + 5*k + 5*t*lx*lz + 4] - 2.0*data[5*i*lz + 5*(k-1) + 5*t*lx*lz + 4] + (1.0/2.0)*data[5*i*lz + 5*(k-2) + 5*t*lx*lz + 4]
+                    MZ = np.array([[Q1B,Q2B,Q3B],[Q2B,Q4B,Q5B],[Q3B,Q5B,-Q1B-Q4B]])
+                else:
+                    Q1A = data[5*i*lz + 5*za + 5*t*lx*lz]
+                    Q2A = data[5*i*lz + 5*za + 5*t*lx*lz + 1]
+                    Q3A = data[5*i*lz + 5*za + 5*t*lx*lz + 2]
+                    Q4A = data[5*i*lz + 5*za + 5*t*lx*lz + 3]
+                    Q5A = data[5*i*lz + 5*za + 5*t*lx*lz + 4]
+
+                    Q1B = data[5*i*lz + 5*zb + 5*t*lx*lz]
+                    Q2B = data[5*i*lz + 5*zb + 5*t*lx*lz + 1]
+                    Q3B = data[5*i*lz + 5*zb + 5*t*lx*lz + 2]
+                    Q4B = data[5*i*lz + 5*zb + 5*t*lx*lz + 3]
+                    Q5B = data[5*i*lz + 5*zb + 5*t*lx*lz + 4]
+
+                    MA = np.array([[Q1A,Q2A,Q3A],[Q2A,Q4A,Q5A],[Q3A,Q5A,-Q1A-Q4A]])
+                    MB = np.array([[Q1B,Q2B,Q3B],[Q2B,Q4B,Q5B],[Q3B,Q5B,-Q1B-Q4B]])
+                    MZ = np.subtract(MA, MB)
+                MX = np.subtract(MR, ML)
+                #if t == 0 or t == lt-1:
+                curlq = 0.0
+                #else:
+                for qi in range(0,3):
+                    for qj in range(0,3):
+                        for ql in range(0,3):
+                            #curlq = (curlq + M[qi][qj]*MX[qi][qj]*lciv[qi][0][ql])
+                            #curlq = (curlq + M[qi][qj]*MZ[qi][qj]*lciv[qi][2][ql])
+                            curlq += (M[qi][qj]*MX[ql][qi]*lciv[qj][2][ql])
+                            curlq += (M[qi][qj]*MZ[ql][qi]*lciv[qj][0][ql])
+                            #curlq += (M[qi][ql]*MX[ql][qi]*lciv[qi][2][ql])
+                            #curlq += (M[qi][ql]*MZ[ql][qi]*lciv[qi][0][ql])
+                            #print(curlq)
+                fcurl.write("%f\n" % (curlq))
+        #print(t)
+
+    fcurl.close()
+
+def analysis(lx,lz,lt,ks,kt,a,b,c,sig,ideal):
     frames = 1
 
-    data = np.loadtxt("ks%ekt%eabc%e%e%esig%d/energyarray.dat" % (ks,kt,a,b,c,sig))
+    data = np.loadtxt("energyarray.dat" % (ks,kt,a,b,c,sig,wideal))
 
-    if not os.path.exists('ks%ekt%eabc%e%e%esig%d/data' % (ks,kt,a,b,c,sig) ):
-        os.makedirs('ks%ekt%eabc%e%e%esig%d/data' % (ks,kt,a,b,c,sig))
+    if not os.path.exists('data'):
+        os.makedirs('data')
 
     r,theta,phi=[],[],[]
     def cart2sph(x,y,z):
         XsqPlusYsq = x**2 + y**2
-        r2 = m.sqrt(XsqPlusYsq + z**2)               # r
-        elev = m.atan2(z,m.sqrt(XsqPlusYsq))     # theta
-        az = m.atan2(y,x)                          # phi
+        r2 = mathsqrt(XsqPlusYsq + z**2)               # r
+        elev = mathatan2(z,math.sqrt(XsqPlusYsq))     # theta
+        az = math.atan2(y,x)                          # phi
         r.append(r2)
         theta.append(elev)
         phi.append(az)
@@ -42,14 +157,14 @@ def analysis(lx,lz,lt,ks,kt,a,b,c,sig):
          b = z.imag
          return math.sqrt(a**2+b**2)
     def JMatrix(x,y,z):
-        beta = m.atan2(y,z)                       # azimuthal angle
+        beta = math.atan2(y,z)                       # azimuthal angle
         #XsqPlusYsq = x**2 + y**2
-        #beta = m.atan2(z,m.sqrt(XsqPlusYsq))
-        #r2 = m.sqrt(XsqPlusYsq + z**2)               # r
+        #beta = math.atan2(z,math.sqrt(XsqPlusYsq))
+        #r2 = math.sqrt(XsqPlusYsq + z**2)               # r
         Ezi = 10
         Exi = 10
-        #alpha = m.atan2(Exi,Eyi)
-        gamma = m.atan2(-x,y) #  + alpha
+        #alpha = math.atan2(Exi,Eyi)
+        gamma = math.atan2(-x,y) #  + alpha
         lamda = 450-9
         n0 = 1.52
         ne = 1.9
@@ -79,30 +194,30 @@ def analysis(lx,lz,lt,ks,kt,a,b,c,sig):
     mod = []
     nx,ny,nz=[],[],[]
 
-    phifile = open("ks%ekt%eabc%e%e%esig%d/data/phi.dat" % (ks,kt,a,b,c,sig), 'w' )
-    rfile = open("ks%ekt%eabc%e%e%esig%d/data/r.dat" % (ks,kt,a,b,c,sig), 'w' )
-    thetafile = open("ks%ekt%eabc%e%e%esig%d/data/theta.dat" % (ks,kt,a,b,c,sig), 'w' )
-    sphfile = open("ks%ekt%eabc%e%e%esig%d/data/sphericalcoords.dat" % (ks,kt,a,b,c,sig), 'w' )
-    cartfile = open("ks%ekt%eabc%e%e%esig%d/data/cartesiancoords.dat" % (ks,kt,a,b,c,sig), 'w' )
-    evalfile = open("ks%ekt%eabc%e%e%esig%d/data/eval.dat" % (ks,kt,a,b,c,sig), 'w' )
-    threedfile1 = open("ks%ekt%eabc%e%e%esig%d/data/3dfile1.dat" % (ks,kt,a,b,c,sig), 'w' )
-    threedfile2 = open("ks%ekt%eabc%e%e%esig%d/data/3dfile2.dat" % (ks,kt,a,b,c,sig), 'w' )
-    threedfile3 = open("ks%ekt%eabc%e%e%esig%d/data/3dfile3.dat" % (ks,kt,a,b,c,sig), 'w' )
-    sumqfile = open("ks%ekt%eabc%e%e%esig%d/data/sumQ.dat" % (ks,kt,a,b,c,sig), 'w' )
-    eval1file = open("ks%ekt%eabc%e%e%esig%d/data/eval1.dat" % (ks,kt,a,b,c,sig), 'w' )
-    eval2file = open("ks%ekt%eabc%e%e%esig%d/data/eval2.dat" % (ks,kt,a,b,c,sig), 'w' )
-    eval3file = open("ks%ekt%eabc%e%e%esig%d/data/eval3.dat" % (ks,kt,a,b,c,sig), 'w' )
-    nxfile = open("ks%ekt%eabc%e%e%esig%d/data/nx.dat" % (ks,kt,a,b,c,sig), 'w' )
-    nyfile = open("ks%ekt%eabc%e%e%esig%d/data/ny.dat" % (ks,kt,a,b,c,sig), 'w' )
-    nzfile = open("ks%ekt%eabc%e%e%esig%d/data/nz.dat" % (ks,kt,a,b,c,sig), 'w' )
-    Q1file = open("ks%ekt%eabc%e%e%esig%d/data/Q1.dat" % (ks,kt,a,b,c,sig), 'w' )
-    Q2file = open("ks%ekt%eabc%e%e%esig%d/data/Q2.dat" % (ks,kt,a,b,c,sig), 'w' )
-    Q3file = open("ks%ekt%eabc%e%e%esig%d/data/Q3.dat" % (ks,kt,a,b,c,sig), 'w' )
-    Q4file = open("ks%ekt%eabc%e%e%esig%d/data/Q4.dat" % (ks,kt,a,b,c,sig), 'w' )
-    Q5file = open("ks%ekt%eabc%e%e%esig%d/data/Q5.dat" % (ks,kt,a,b,c,sig), 'w' )
-    modqfile = open("ks%ekt%eabc%e%e%esig%d/data/modQ.dat" % (ks,kt,a,b,c,sig), 'w')
-    intensityfile = open("ks%ekt%eabc%e%e%esig%d/data/Intensity.dat" % (ks,kt,a,b,c,sig), 'w')
-    jmats = open("ks%ekt%eabc%e%e%esig%d/data/Jmats.dat" % (ks,kt,a,b,c,sig), 'w')
+    phifile = open("data/phi.dat" , 'w' )
+    rfile = open("data/r.dat" , 'w' )
+    thetafile = open("data/theta.dat" , 'w' )
+    sphfile = open("data/sphericalcoords.dat" , 'w' )
+    cartfile = open("data/cartesiancoords.dat" , 'w' )
+    evalfile = open("data/eval.dat" , 'w' )
+    threedfile1 = open("data/3dfile1.dat" , 'w' )
+    threedfile2 = open("data/3dfile2.dat" , 'w' )
+    threedfile3 = open("data/3dfile3.dat" , 'w' )
+    sumqfile = open("data/sumQ.dat" , 'w' )
+    eval1file = open("data/eval1.dat" , 'w' )
+    eval2file = open("data/eval2.dat" , 'w' )
+    eval3file = open("data/eval3.dat" , 'w' )
+    nxfile = open("data/nx.dat" , 'w' )
+    nyfile = open("data/ny.dat" , 'w' )
+    nzfile = open("data/nz.dat" , 'w' )
+    Q1file = open("data/Q1.dat" , 'w' )
+    Q2file = open("data/Q2.dat" , 'w' )
+    Q3file = open("data/Q3.dat" , 'w' )
+    Q4file = open("data/Q4.dat" , 'w' )
+    Q5file = open("data/Q5.dat" , 'w' )
+    modqfile = open("data/modQ.dat" , 'w')
+    intensityfile = open("data/Intensity.dat" , 'w')
+    jmats = open("data/Jmats.dat" , 'w')
 
     Q1m,Q2m,Q3m,Q4m,Q5m = [],[],[],[],[]
     eval1,eval2,eval3 = [],[],[]
@@ -135,7 +250,7 @@ def analysis(lx,lz,lt,ks,kt,a,b,c,sig):
                 xi = evec[0,0]
                 yi = (evec[1,0])
                 zi = (evec[2,0])
-                #JMatrix(x,y,z)
+                JMatrix(x,y,z)
 
                 nx.append(x)
                 ny.append(y)
@@ -338,10 +453,10 @@ def writeenergy(guess,sig,Lz,Lt,ks,kt,a,b,c):
     energy = (bulk + splay + twist + timeen + surface)# / (Lz*Lt)
 
     #calculategrad.calcgrad(guess,original,GradE,sig,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/energyevolution.dat" % (ks,kt,a,b,c,sig), enarrayinit)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/bulkevolution.dat" % (ks,kt,a,b,c,sig), bulkenarr)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/twistevolution.dat" % (ks,kt,a,b,c,sig), twistenarr)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/splayevolution.dat" % (ks,kt,a,b,c,sig), splayenarr)
-    np.savetxt("ks%ekt%eabc%e%e%esig%d/timeevolution.dat" % (ks,kt,a,b,c,sig), timeenarr)
+    np.savetxt("energyevolution.dat" ,enarrayinit)
+    np.savetxt("bulkevolution.dat" ,bulkenarr)
+    np.savetxt("twistevolution.dat" ,twistenarr)
+    np.savetxt("splayevolution.dat" ,splayenarr)
+    np.savetxt("timeevolution.dat" ,timeenarr)
 
     return(energy)

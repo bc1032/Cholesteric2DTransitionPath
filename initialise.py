@@ -45,63 +45,60 @@ def initialise(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1, Q2, Q3, Q4, Q5,
 
 def redefinerandom(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1, Q2, Q3, Q4, Q5, Lx, Length, Time, winding0, winding1, a, b, c):
     rana,ranb,ranc,rand,rane = [],[],[],[],[]
+    #for j in range(5,Time-5):
+
+    for x in range(0,Lx):
+        n = 0.0
+
+        for y in range(2,Length-2):
+            zang = n*math.pi/(Length-4)
+
+            rannum = np.random.uniform(-1.0,1.0)
+            if rannum > 0:
+                rana.append(np.random.normal(0.0,2.0)*math.sin(zang))
+            else:
+                rana.append(0.0)
+
+            rannum = np.random.uniform(-1.0,1.0)
+            if rannum > 0:
+                ranb.append(np.random.normal(0.0,2.0)*math.sin(zang))
+            else:
+                ranb.append(0.0)
+            rannum = np.random.uniform(-1.0,1.0)
+            if rannum > 0:
+                ranc.append(np.random.normal(0.0,2.0)*math.sin(zang))
+            else:
+                ranc.append(0.0)
+
+            rannum = np.random.uniform(-1.0,1.0)
+            if rannum > 0:
+                rand.append(np.random.normal(0.0,2.0)*math.sin(zang))
+            else:
+                rand.append(0.0)
+
+            rannum = np.random.uniform(-1.0,1.0)
+            if rannum > 0:
+                rane.append(np.random.normal(0.0,2.0)*math.sin(zang))
+            else:
+                rane.append(0.0)
+
+            n+=1
+
+    n = 0.0
     for j in range(5,Time-5):
-
+        testang = n*math.pi/(Time-10)
+        rancnt = 0
         for x in range(0,Lx):
-            n = 0.0
-
-            for y in range(2,Length-2):
-                zang = n*math.pi/(Length-4)
-
-                rannum = np.random.uniform(-1.0,1.0)
-                if rannum > 0:
-                    rana.append(np.random.normal(0.0,2.0)*math.sin(zang))
-                else:
-                    rana.append(0.0)
-
-                rannum = np.random.uniform(-1.0,1.0)
-                if rannum > 0:
-                    ranb.append(np.random.normal(0.0,2.0)*math.sin(zang))
-                else:
-                    ranb.append(0.0)
-                rannum = np.random.uniform(-1.0,1.0)
-                if rannum > 0:
-                    ranc.append(np.random.normal(0.0,2.0)*math.sin(zang))
-                else:
-                    rand.append(0.0)
-
-                rannum = np.random.uniform(-1.0,1.0)
-                if rannum > 0:
-                    rand.append(np.random.normal(0.0,2.0)*math.sin(zang))
-                else:
-                    rand.append(0.0)
-
-                rannum = np.random.uniform(-1.0,1.0)
-                if rannum > 0:
-                    rane.append(np.random.normal(0.0,2.0)*math.sin(zang))
-                else:
-                    rane.append(0.0)
-
-                n+=1
-    rancnt = 0
-    strength = (b + math.sqrt(b**2 + 24*a*c))/(4.0*c)
-    #print(rana[0],rana[1])
-    for j in range(5,Time-5):
-        for x in range(0,Lx):
-            n = 0.0
             for i in range(2,Length-2):
-
-
-                testang = n*math.pi/(Time-10)
-
                 Q1[x,i,j] += math.sin(testang)*rana[rancnt]
                 Q2[x,i,j] += math.sin(testang)*ranb[rancnt]
                 Q3[x,i,j] += math.sin(testang)*ranc[rancnt]
                 Q4[x,i,j] += math.sin(testang)*rand[rancnt]
                 Q5[x,i,j] += math.sin(testang)*rane[rancnt]
+                rancnt+=1
 
-                n+=1
-            rancnt+=1
+
+        n+=1
         #rancnt+=1
         #print(rancnt)
 

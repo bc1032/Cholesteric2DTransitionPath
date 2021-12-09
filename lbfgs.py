@@ -1,28 +1,15 @@
-#Libraries
-import math
-import os
+import minimisation
 import numpy as np
-import matplotlib.pyplot as plt
-from decimal import Decimal
-import scipy
-from scipy.optimize import minimize
-
-import periodic
+import os
+import analyse
+import math
 import calculategrad
 import initialise
-import update
-import energy as en
-import analyse
-import writeenergy
 
 multconst = 1e0
-#ks = 1e-12*multconst
-#kt = 1e-12*multconst
-
-#while kt <= 1e5:
 zcomp = 2
-Lx,Lz = 50,50
-Lt = 200
+Lx,Lz = 25,25
+Lt = 150
 ws = 0
 maxfuncls = 10000
 gconv = 2.2e-16
@@ -41,22 +28,12 @@ coza,cozb = 0,0
 #time energy
 sig = 1e5
 #Elastic constants
-kt = 1e-12*multconst
-ks = 1e-12*multconst
+kt = 1e-2*multconst
+ks = 1e-2*multconst
 #Bulk constants
-a=3e-2
-b=2e-2
-c=1e-2
-#Create data folder
-if not os.path.exists('/home/bc1032/Desktop/Work/Cholesterics/2DLBFGS/results/ks%ekt%eabc%e%e%esig%d' % (ks,kt,a,b,c,sig)):
-    os.makedirs('/home/bc1032/Desktop/Work/Cholesterics/2DLBFGS/results/ks%ekt%eabc%e%e%esig%d' % (ks,kt,a,b,c,sig))
-
-os.chdir('/home/bc1032/Desktop/Work/Cholesterics/2DLBFGS/results/ks%ekt%eabc%e%e%esig%d' % (ks,kt,a,b,c,sig))
-splay,twist,bend,surface,bulk = 0.0,0.0,0.0,0.0,0.0
-timeen = 0.0
-
-s = (b + math.sqrt(b**2 + 24*a*c))/(4.0*c)
-print(s)
+a=3e2
+b=2e2
+c=1e2
 
 #initial and final windings for initial conditions
 
@@ -64,19 +41,17 @@ w0 = 1.0
 w1 = 3.0
 #Chirality
 wideal=(w0+w1)/2.0
+#wideal = 25.0
 q0 = wideal*math.pi/(dz*(Lz-1))
 
-fq5 = np.zeros([Lx,Lz,Lt])
-fq3 = np.zeros([Lx,Lz,Lt])
-fgamma = np.zeros([Lx,Lz,Lt])
-falpha = np.zeros([Lx,Lz,Lt])
-fbeta = np.zeros([Lx,Lz,Lt])
-alpha = np.zeros([Lx,Lz,Lt])
-beta = np.zeros([Lx,Lz,Lt])
-gamma = np.zeros([Lx,Lz,Lt])
-alphatemp = np.zeros([Lx,Lz,Lt])
-betatemp = np.zeros([Lx,Lz,Lt])
-gammatemp = np.zeros([Lx,Lz,Lt])
+
+#Create data folder
+if not os.path.exists('results/ks%ekt%eabc%e%e%esig%dq0%f' % (ks,kt,a,b,c,sig,wideal)):
+    os.makedirs('results/ks%ekt%eabc%e%e%esig%dq0%f' % (ks,kt,a,b,c,sig,wideal))
+
+os.chdir('results/ks%ekt%eabc%e%e%esig%dq0%f' % (ks,kt,a,b,c,sig,wideal))
+s = (b + math.sqrt(b**2 + 24*a*c))/(4.0*c)
+
 Q3 = np.zeros([Lx,Lz,Lt])
 Q5 = np.zeros([Lx,Lz,Lt])
 Q3temp = np.zeros([Lx,Lz,Lt])
@@ -87,66 +62,11 @@ Q4 = np.zeros([Lx,Lz,Lt])
 
 (Q1,Q2,Q3,Q4,Q5) = initialise.initialise(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1,Q2,Q3,Q4,Q5,Lx,Lz,Lt,w0,w1,a,b,c)
 
-#For My stuff
-if zcomp == 1:
-    (alpha,beta,gamma,Q4,Q5) = initialise.redefine(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1,Q2,Q3,Q4,Q5,Lx,Lz,Lt,w0,w1,a,b,c)
-if zcomp == 2:
-    (Q1,Q2,Q3,Q4,Q5) = initialise.redefinerandom(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1,Q2,Q3,Q4,Q5,Lx,Lz,Lt,w0,w1,a,b,c)
+calculategrad.Hessian(sig,Lx,Lz,Lt,ks,kt,q0,s,a,b,c,Q1,Q2,Q3,Q4,Q5)
 
-#For Yucens Data
-# if zcomp == 1:
-#     (Q1,Q2,Q3,Q4,Q5) = initialise.redefine2(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1,Q2,Q3,Q4,Q5,Lz,Lt,w0,w1,a,b,c)
-#print(Q2)
-file1 = open('initialguess.dat', 'w')
-gradfile1 = open('graden.dat', 'w')
-for t in range(0,Lt):
-    for x in range(0,Lx):
-        for z in range(0,Lz):
-            file1.write("%f\n" % Q1[x,z,t])
-            file1.write("%f\n" % Q2[x,z,t])
-            file1.write("%f\n" % Q3[x,z,t])
-            file1.write("%f\n" % Q4[x,z,t])
-            file1.write("%f\n" % Q5[x,z,t])
-            gradfile1.write("0.0\n")
-            gradfile1.write("0.0\n")
-            gradfile1.write("0.0\n")
-            gradfile1.write("0.0\n")
-            gradfile1.write("0.0\n")
-
-file1.close()
-gradfile1.close()
-GradE = np.loadtxt("graden.dat")
-guess = np.loadtxt("initialguess.dat")
-original = guess
-
-print(np.shape(guess), type(guess))
-z = 0
-x = 0
-t = 0
-#GradE = calculategrad.calcgrad(guess,original,GradE,sig,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws)
-
-#Q3 = np.zeros([Lx,Lz,Lt])
-#Q5 = np.zeros([Lx,Lz,Lt])
-#Q1 = np.zeros([Lx,Lz,Lt])
-#Q2 = np.zeros([Lx,Lz,Lt])
-#Q4 = np.zeros([Lx,Lz,Lt])
-
-
-minen = scipy.optimize.minimize(en.calcenergy,guess,\
-args=(original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk),\
-options={'disp': True, 'maxiter': iters},method='L-BFGS-B',jac=True)
-
-
-np.savetxt("energyarray.dat", minen.x )
-#en.writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
-#analyse.analysis(Lz,Lt,ks,kt,a,b,c,sig)
+#minimisation.LBFGS(zcomp, Lx, Lz, Lt, ws, maxfuncls, gconv, fconv, iters, funciters, lsiters, splitt, splitz, dz, coza, cozb, sig, ks, kt, a, b, c, s, w0, w1,multconst,wideal)
+#np.savetxt("energyarray.dat", minen.x )
+# en.writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
+# analyse.analysis(Lz,Lt,ks,kt,a,b,c,sig)
+# analyse.curl(Lz,Lx,Lt)
 print(Lx,Lz,Lt)
-
-
-# Energy = np.zeros((Lt))
-# s = (b + math.sqrt(b**2 + 24*a*c))/(4.0*c)
-# qt = np.array([[2.0*s/3.0,0,0],[0,-s/3.0,0],[0,0,-s/3.0]])
-# Qt1,Qt2,Qt3,Qt4,Qt5= (2.0*s/3.0),0.0,0.0,-s/3.0,0.0
-#np.savetxt("differencearray.dat", guess-minen.x)
-
-multconst *= 10
