@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import scipy
 
 def calcgrad(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk):
     dz = 1
@@ -173,14 +174,18 @@ def Hessian(sig,Lx,Lz,Lt,ks,kt,q0,s,a,b,c,Q1,Q2,Q3,Q4,Q5):
     Hessian2=[]
     t = 0
     #Calculate Bulk Gradient Energy Term and Elastic Energy Terms
-    xx,zz = 0,0
-    for i in range(0,Lx*Lz*25):
-        if i % 10 == 0:
-            print(i)
+
             #print(np.linalg.eigvals(Hessian))
     #i = 0
-
+    onsitex = 0
+    #for i in range(0,Lx*Lz*25):
+    x = 0
+    for i in range(0,25*Lx*Lz):
+        if i % 2000 == 0:
+            print('i:')
+            print(i)
         for x in range(0,Lx):
+            onsitez = 0
             #i += 1
             if x == 0:
                 xl = Lx-1
@@ -192,10 +197,11 @@ def Hessian(sig,Lx,Lz,Lt,ks,kt,q0,s,a,b,c,Q1,Q2,Q3,Q4,Q5):
                 xl = x - 1
                 xr = x + 1
             for z in range(0,Lz):
-                #for q in range(0,5):
-                    #for i in range(0,Lx):
-                    #    for j in range(0,Lz):
-                if xx == x and zz == z:
+                if z % 10 == 0:
+                    #print(z)
+                    test = 0
+                if onsitex == x and onsitez == z:
+                #if test == x+z:
                     rightQ1Q5 = -9*dx*dz**2*kt*q0
                     rightQ2Q3 = -9*dx*dz**2*kt*q0
                     rightQ3Q2 = 9*dx*dz**2*kt*q0
@@ -229,63 +235,46 @@ def Hessian(sig,Lx,Lz,Lt,ks,kt,q0,s,a,b,c,Q1,Q2,Q3,Q4,Q5):
                     onsiteQ4Q5 = 36*c*dx**2*dz**2*(Q1[x,z,t] + 2*Q4[x,z,t])*Q5[x,z,t]
                     onsiteQ5Q5 = 18*dx**2*dz**2*(-a + 2*c*Q1[x,z,t]**2 + Q1[x,z,t]*(b + 2*c*Q4[x,z,t]) + 2*c*(Q2[x,z,t]**2 + Q3[x,z,t]**2 + Q4[x,z,t]**2 + 3*Q5[x,z,t]**2))
 
-                    Hessian[25*x*Lz + 25*z,i] = onsiteQ1Q1
-                    Hessian[25*x*Lz + 25*z + 1,i] = onsiteQ1Q2
-                    Hessian[25*x*Lz + 25*z + 2,i] = onsiteQ1Q3
-                    Hessian[25*x*Lz + 25*z + 3,i] = onsiteQ1Q4
-                    Hessian[25*x*Lz + 25*z + 4,i] = onsiteQ1Q5
-                    Hessian[25*x*Lz + 25*z + 5,i] = onsiteQ1Q2
-                    Hessian[25*x*Lz + 25*z + 6,i] = onsiteQ2Q2
-                    Hessian[25*x*Lz + 25*z + 7,i] = onsiteQ2Q3
-                    Hessian[25*x*Lz + 25*z + 8,i] = onsiteQ2Q4
-                    Hessian[25*x*Lz + 25*z + 9,i] = onsiteQ2Q5
-                    Hessian[25*x*Lz + 25*z + 10,i] = onsiteQ1Q3
-                    Hessian[25*x*Lz + 25*z + 11,i] = onsiteQ2Q3
-                    Hessian[25*x*Lz + 25*z + 12,i] = onsiteQ3Q3
-                    Hessian[25*x*Lz + 25*z + 13,i] = onsiteQ3Q4
-                    Hessian[25*x*Lz + 25*z + 14,i] = onsiteQ3Q5
-                    Hessian[25*x*Lz + 25*z + 15,i] = onsiteQ1Q4
-                    Hessian[25*x*Lz + 25*z + 16,i] = onsiteQ2Q4
-                    Hessian[25*x*Lz + 25*z + 17,i] = onsiteQ3Q4
-                    Hessian[25*x*Lz + 25*z + 18,i] = onsiteQ4Q4
-                    Hessian[25*x*Lz + 25*z + 19,i] = onsiteQ4Q5
-                    Hessian[25*x*Lz + 25*z + 20,i] = onsiteQ1Q5
-                    Hessian[25*x*Lz + 25*z + 21,i] = onsiteQ2Q5
-                    Hessian[25*x*Lz + 25*z + 22,i] = onsiteQ3Q5
-                    Hessian[25*x*Lz + 25*z + 23,i] = onsiteQ4Q5
-                    Hessian[25*x*Lz + 25*z + 24,i] = onsiteQ5Q5
+                    Hessian[(25*x*Lz + 25*z ),i] = onsiteQ1Q1
+                    Hessian[(25*x*Lz + 25*z ) + 1,i] = onsiteQ1Q2
+                    Hessian[(25*x*Lz + 25*z ) + 2,i] = onsiteQ1Q3
+                    Hessian[(25*x*Lz + 25*z ) + 3,i] = onsiteQ1Q4
+                    Hessian[(25*x*Lz + 25*z ) + 4,i] = onsiteQ1Q5
+                    Hessian[(25*x*Lz + 25*z ) + 5,i] = onsiteQ1Q2
+                    Hessian[(25*x*Lz + 25*z ) + 6,i] = onsiteQ2Q2
+                    Hessian[(25*x*Lz + 25*z ) + 7,i] = onsiteQ2Q3
+                    Hessian[(25*x*Lz + 25*z ) + 8,i] = onsiteQ2Q4
+                    Hessian[(25*x*Lz + 25*z ) + 9,i] = onsiteQ2Q5
+                    Hessian[(25*x*Lz + 25*z ) + 10,i] = onsiteQ1Q3
+                    Hessian[(25*x*Lz + 25*z ) + 11,i] = onsiteQ2Q3
+                    Hessian[(25*x*Lz + 25*z ) + 12,i] = onsiteQ3Q3
+                    Hessian[(25*x*Lz + 25*z ) + 13,i] = onsiteQ3Q4
+                    Hessian[(25*x*Lz + 25*z ) + 14,i] = onsiteQ3Q5
+                    Hessian[(25*x*Lz + 25*z ) + 15,i] = onsiteQ1Q4
+                    Hessian[(25*x*Lz + 25*z ) + 16,i] = onsiteQ2Q4
+                    Hessian[(25*x*Lz + 25*z ) + 17,i] = onsiteQ3Q4
+                    Hessian[(25*x*Lz + 25*z ) + 18,i] = onsiteQ4Q4
+                    Hessian[(25*x*Lz + 25*z ) + 19,i] = onsiteQ4Q5
+                    Hessian[(25*x*Lz + 25*z ) + 20,i] = onsiteQ1Q5
+                    Hessian[(25*x*Lz + 25*z ) + 21,i] = onsiteQ2Q5
+                    Hessian[(25*x*Lz + 25*z ) + 22,i] = onsiteQ3Q5
+                    Hessian[(25*x*Lz + 25*z ) + 23,i] = onsiteQ4Q5
+                    Hessian[(25*x*Lz + 25*z ) + 24,i] = onsiteQ5Q5
 
-                    Hessian[25*xr*Lz + 25*z + 4,i] = rightQ1Q5
-                    Hessian[25*xr*Lz + 25*z + 7,i] = rightQ2Q3
-                    Hessian[25*xr*Lz + 25*z + 11,i] = rightQ3Q2
-                    Hessian[25*xr*Lz + 25*z + 19,i] = rightQ4Q5
-                    Hessian[25*xr*Lz + 25*z + 20,i] = rightQ5Q1
-                    Hessian[25*xr*Lz + 25*z + 23,i] = rightQ5Q4
+                    Hessian[(25*xr*Lz + 25*z ) + 4,i] = rightQ1Q5
+                    Hessian[(25*xr*Lz + 25*z ) + 7,i] = rightQ2Q3
+                    Hessian[(25*xr*Lz + 25*z ) + 11,i] = rightQ3Q2
+                    Hessian[(25*xr*Lz + 25*z ) + 19,i] = rightQ4Q5
+                    Hessian[(25*xr*Lz + 25*z ) + 20,i] = rightQ5Q1
+                    Hessian[(25*xr*Lz + 25*z ) + 23,i] = rightQ5Q4
 
-                    Hessian[25*xl*Lz + 25*z + 4,i] = leftQ1Q5
-                    Hessian[25*xl*Lz + 25*z + 7,i] = leftQ2Q3
-                    Hessian[25*xl*Lz + 25*z + 11,i] = leftQ3Q2
-                    Hessian[25*xl*Lz + 25*z + 19,i] = leftQ4Q5
-                    Hessian[25*xl*Lz + 25*z + 20,i] = leftQ5Q1
-                    Hessian[25*xl*Lz + 25*z + 23,i] = leftQ5Q4
+                    Hessian[(25*(xl)*Lz + 25*z ) + 4,i] = leftQ1Q5
+                    Hessian[(25*(xl)*Lz + 25*z ) + 7,i] = leftQ2Q3
+                    Hessian[(25*(xl)*Lz + 25*z ) + 11,i] = leftQ3Q2
+                    Hessian[(25*(xl)*Lz + 25*z ) + 19,i] = leftQ4Q5
+                    Hessian[(25*(xl)*Lz + 25*z ) + 20,i] = leftQ5Q1
+                    Hessian[(25*(xl)*Lz + 25*z ) + 23,i] = leftQ5Q4
 
-#                    print(x,z)
-#                    print(25*x*Lz + 25*z)
-#                    print(25*xl*Lz + 25*z + 4)
-                    #
-                    # Hessian[25*xr*Lz + 25*z + 4,i] = 25*xr*Lz + 25*z + 4
-                    # Hessian[25*xr*Lz + 25*z + 7,i] = 25*xr*Lz + 25*z + 7
-                    # Hessian[25*xr*Lz + 25*z + 11,i] = 25*xr*Lz + 25*z + 11
-                    # Hessian[25*xr*Lz + 25*z + 19,i] = 25*xr*Lz + 25*z + 19
-                    # Hessian[25*xr*Lz + 25*z + 20,i] = 25*xr*Lz + 25*z + 20
-                    # Hessian[25*xr*Lz + 25*z + 23,i] = 25*xr*Lz + 25*z + 23
-                    #
-                    # Hessian[25*xl*Lz + 25*z + 4,i] = 25*xr*Lz + 25*z + 4
-                    # Hessian[25*xl*Lz + 25*z + 7,i] = 25*xr*Lz + 25*z + 7
-                    # Hessian[25*xl*Lz + 25*z + 11,i] = 25*xr*Lz + 25*z + 11
-                    # Hessian[25*xl*Lz + 25*z + 19,i] = 25*xr*Lz + 25*z + 19
-                    # Hessian[25*xl*Lz + 25*z + 20,i] = 25*xr*Lz + 25*z + 20
-                    # Hessian[25*xl*Lz + 25*z + 23,i] = 25*xr*Lz + 25*z + 23
                     if z!= Lz-1:
                         aboveQ1Q2 = -9*dx**2*dz*kt*q0
                         aboveQ2Q1 = 9*dx**2*dz*kt*q0
@@ -294,12 +283,12 @@ def Hessian(sig,Lx,Lz,Lt,ks,kt,q0,s,a,b,c,Q1,Q2,Q3,Q4,Q5):
                         aboveQ4Q2 = 9*dx**2*dz*kt*q0
                         aboveQ5Q3 = 9*dx**2*dz*kt*q0
 
-                        Hessian[25*x*Lz + 25*(z+1) + 1,i] = aboveQ1Q2
-                        Hessian[25*x*Lz + 25*(z+1) + 5,i] = aboveQ2Q1
-                        Hessian[25*x*Lz + 25*(z+1) + 8,i] = aboveQ2Q4
-                        Hessian[25*x*Lz + 25*(z+1) + 14,i] = aboveQ3Q5
-                        Hessian[25*x*Lz + 25*(z+1) + 16,i] = aboveQ4Q2
-                        Hessian[25*x*Lz + 25*(z+1) + 22,i] = aboveQ5Q3
+                        Hessian[(25*x*Lz + 25*(z+1)) + 1,i] = aboveQ1Q2
+                        Hessian[(25*x*Lz + 25*(z+1)) + 5,i] = aboveQ2Q1
+                        Hessian[(25*x*Lz + 25*(z+1)) + 8,i] = aboveQ2Q4
+                        Hessian[(25*x*Lz + 25*(z+1)) + 14,i] = aboveQ3Q5
+                        Hessian[(25*x*Lz + 25*(z+1)) + 16,i] = aboveQ4Q2
+                        Hessian[(25*x*Lz + 25*(z+1)) + 22,i] = aboveQ5Q3
                         #print(x,z)
 
                     if z!= 0:
@@ -310,21 +299,42 @@ def Hessian(sig,Lx,Lz,Lt,ks,kt,q0,s,a,b,c,Q1,Q2,Q3,Q4,Q5):
                         belowQ4Q2 = -9*dx**2*dz*kt*q0
                         belowQ5Q3 = -9*dx**2*dz*kt*q0
 
-                        Hessian[25*x*Lz + 25*(z-1) + 1,i] = belowQ1Q2
-                        Hessian[25*x*Lz + 25*(z-1) + 5,i] = belowQ2Q1
-                        Hessian[25*x*Lz + 25*(z-1) + 8,i] = belowQ2Q4
-                        Hessian[25*x*Lz + 25*(z-1) + 14,i] = belowQ3Q5
-                        Hessian[25*x*Lz + 25*(z-1) + 16,i] = belowQ4Q2
-                        Hessian[25*x*Lz + 25*(z-1) + 22,i] = belowQ5Q3
+                        Hessian[(25*x*Lz - 25*(z)) + 1,i] = belowQ1Q2
+                        Hessian[(25*x*Lz - 25*(z)) + 5,i] = belowQ2Q1
+                        Hessian[(25*x*Lz - 25*(z)) + 8,i] = belowQ2Q4
+                        Hessian[(25*x*Lz - 25*(z)) + 14,i] = belowQ3Q5
+                        Hessian[(25*x*Lz - 25*(z)) + 16,i] = belowQ4Q2
+                        Hessian[(25*x*Lz - 25*(z)) + 22,i] = belowQ5Q3
+            #        z +=1
+                    test += 1
 
-            xx+=1
-        zz+=1
-    print(np.shape(Hessian))
-    print(Hessian)
-    print( np.linalg.eigvals(Hessian) )
+                #if i == 0:
+                #    np.savetxt("Hessian.dat",(Hessian[:,0]))
+                #elif i == 1:
+                #    np.savetxt("Hessian2.dat",(Hessian[:,1]))
+            onsitez+=1
+            #x+=1
+        onsitex+=1
+        #print(np.linalg.eigvals(Hessian))
+
+#    print(np.shape(Hessian))
+
+    #print(np.linalg.eigvalsh(Hessian))
+
     #print(Hessian)
-#    print(np.linalg.eigvals(Hessian))
+
     np.savetxt("Hessian.dat",(Hessian[:,0]))
-    np.savetxt("HessianEvals.dat", np.linalg.eigvals(Hessian))
+    np.savetxt("Hessianlast.dat",(Hessian[:,(25*Lx*Lz)-1]))
+
+    np.savetxt("Hessian2.dat",(Hessian[:,1]))
+    np.savetxt("Hessian3.dat",(Hessian[:,2]))
+    a = np.asarray(np.linalg.eigvals(Hessian))
+    print(a)
+    evs = []
+    #for eval in range(0,len(a)):
+    #    if a[eval] != 0:
+    #        evs.append(a[eval])
+    print(np.shape(a))
+    np.savetxt("HessianEvals.dat", a)
     #return(Hessian)
     return()

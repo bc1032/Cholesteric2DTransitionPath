@@ -8,8 +8,8 @@ import initialise
 
 multconst = 1e0
 zcomp = 2
-Lx,Lz = 25,25
-Lt = 150
+Lx,Lz = 20,20
+Lt = 10
 ws = 0
 maxfuncls = 10000
 gconv = 2.2e-16
@@ -31,9 +31,9 @@ sig = 1e5
 kt = 1e-2*multconst
 ks = 1e-2*multconst
 #Bulk constants
-a=3e2
-b=2e2
-c=1e2
+a=3e-2
+b=2e-2
+c=1e-2
 
 #initial and final windings for initial conditions
 
@@ -41,7 +41,7 @@ w0 = 1.0
 w1 = 3.0
 #Chirality
 wideal=(w0+w1)/2.0
-#wideal = 25.0
+#wideal = 1000.0
 q0 = wideal*math.pi/(dz*(Lz-1))
 
 
