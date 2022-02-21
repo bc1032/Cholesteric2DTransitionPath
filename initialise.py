@@ -55,30 +55,30 @@ def redefinerandom(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1, Q2, Q3, Q4,
 
             rannum = np.random.uniform(-1.0,1.0)
             if rannum > 0:
-                rana.append(np.random.normal(0.0,2.0)*math.sin(zang))
+                rana.append(np.random.normal(0.0,1.0)*math.sin(zang))
             else:
                 rana.append(0.0)
 
             rannum = np.random.uniform(-1.0,1.0)
             if rannum > 0:
-                ranb.append(np.random.normal(0.0,2.0)*math.sin(zang))
+                ranb.append(np.random.normal(0.0,1.0)*math.sin(zang))
             else:
                 ranb.append(0.0)
             rannum = np.random.uniform(-1.0,1.0)
             if rannum > 0:
-                ranc.append(np.random.normal(0.0,2.0)*math.sin(zang))
+                ranc.append(np.random.normal(0.0,1.0)*math.sin(zang))
             else:
                 ranc.append(0.0)
 
             rannum = np.random.uniform(-1.0,1.0)
             if rannum > 0:
-                rand.append(np.random.normal(0.0,2.0)*math.sin(zang))
+                rand.append(np.random.normal(0.0,1.0)*math.sin(zang))
             else:
                 rand.append(0.0)
 
             rannum = np.random.uniform(-1.0,1.0)
             if rannum > 0:
-                rane.append(np.random.normal(0.0,2.0)*math.sin(zang))
+                rane.append(np.random.normal(0.0,1.0)*math.sin(zang))
             else:
                 rane.append(0.0)
 

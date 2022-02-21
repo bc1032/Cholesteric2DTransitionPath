@@ -130,7 +130,7 @@ def curl(lz,lx,lt):
 def analysis(lx,lz,lt,ks,kt,a,b,c,sig,ideal):
     frames = 1
 
-    data = np.loadtxt("energyarray.dat" % (ks,kt,a,b,c,sig,wideal))
+    data = np.loadtxt("energyarray.dat")
 
     if not os.path.exists('data'):
         os.makedirs('data')
@@ -138,8 +138,8 @@ def analysis(lx,lz,lt,ks,kt,a,b,c,sig,ideal):
     r,theta,phi=[],[],[]
     def cart2sph(x,y,z):
         XsqPlusYsq = x**2 + y**2
-        r2 = mathsqrt(XsqPlusYsq + z**2)               # r
-        elev = mathatan2(z,math.sqrt(XsqPlusYsq))     # theta
+        r2 = math.sqrt(XsqPlusYsq + z**2)               # r
+        elev = math.atan2(z,math.sqrt(XsqPlusYsq))     # theta
         az = math.atan2(y,x)                          # phi
         r.append(r2)
         theta.append(elev)

@@ -49,9 +49,9 @@ def LBFGS(zcomp, Lx, Lz, Lt, ws, maxfuncls, gconv, fconv, iters, funciters, lsit
 
     (Q1,Q2,Q3,Q4,Q5) = initialise.initialise(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1,Q2,Q3,Q4,Q5,Lx,Lz,Lt,w0,w1,a,b,c)
 
-    calculategrad.Hessian(sig,Lx,Lz,Lt,ks,kt,q0,s,a,b,c,Q1,Q2,Q3,Q4,Q5)
+    #calculategrad.Hessian(sig,Lx,Lz,Lt,ks,kt,q0,s,a,b,c,Q1,Q2,Q3,Q4,Q5)
 
-    #For My stuff
+    #For My stuff choose mode of initialisation
     if zcomp == 1:
         (alpha,beta,gamma,Q4,Q5) = initialise.redefine(splitt,splitz,lowz,highz,timesplit,timesplitf,Q1,Q2,Q3,Q4,Q5,Lx,Lz,Lt,w0,w1,a,b,c)
     if zcomp == 2:
@@ -101,13 +101,13 @@ def LBFGS(zcomp, Lx, Lz, Lt, ws, maxfuncls, gconv, fconv, iters, funciters, lsit
     args=(original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk),\
     options={'disp': True, 'maxiter': iters},method='L-BFGS-B',jac=True)
 
+    wideal=(w0+w1)/2.0
 
     np.savetxt("energyarray.dat", minen.x )
-    en.writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
-    analyse.analysis(Lz,Lt,ks,kt,a,b,c,sig)
-    en.writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
-    #analyse.analysis(Lz,Lt,ks,kt,a,b,c,sig)
+    #en.writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
+    analyse.analysis(Lx,Lz,Lt,ks,kt,a,b,c,sig,wideal)
     analyse.curl(Lz,Lx,Lt)
     print(Lx,Lz,Lt)
 
     multconst *= 10
+    return()

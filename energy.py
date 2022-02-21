@@ -141,7 +141,8 @@ def writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamm
     enarrayinit = []
     bulkenarr, splayenarr, twistenarr, timeenarr = [],[],[],[]
     for t in range(0,Lt):
-        splayen,twisten,benden,surfaceen,bulken, timeenen = 0.0,0.0,0.0,0.0,0.0,0.0
+        splayen,twisten,benden,surfaceen,bulk, timeenen = 0.0,0.0,0.0,0.0,0.0,0.0
+        bulken = 0.0
         for x in range(0,Lx):
             if x == 0:
                 xl = Lx-1
@@ -167,11 +168,11 @@ def writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamm
                     Q5[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz + 4]
 
                 else:
-                    timeen += (sig*((-Q1[z,t-1] + Q1[z,t+1])**2/(4.*dz**2) + (-Q2[z,t-1] + Q2[z,t+1])**2/(2.*dz**2)\
-                            + (-Q3[z,t-1] + Q3[z,t+1])**2/(2.*dz**2) + \
-                            (-Q4[z,t-1] + Q4[z,t+1])**2/(4.*dz**2) + \
-                            (-(-Q1[z,t-1] + Q1[z,t+1])/(2.*dz) - (-Q4[z,t-1] + Q4[z,t+1])/(2.*dz))**2 +\
-                            (-Q5[z,t-1] + Q5[z,t+1])**2/(2.*dz**2)))/2.
+                    timeen += (sig*((-Q1[x,z,t-1] + Q1[x,z,t+1])**2/(4.*dz**2) + (-Q2[x,z,t-1] + Q2[x,z,t+1])**2/(2.*dz**2)\
+                            + (-Q3[x,z,t-1] + Q3[x,z,t+1])**2/(2.*dz**2) + \
+                            (-Q4[x,z,t-1] + Q4[x,z,t+1])**2/(4.*dz**2) + \
+                            (-(-Q1[x,z,t-1] + Q1[x,z,t+1])/(2.*dz) - (-Q4[x,z,t-1] + Q4[x,z,t+1])/(2.*dz))**2 +\
+                            (-Q5[x,z,t-1] + Q5[x,z,t+1])**2/(2.*dz**2)))/2.
 
                 if z == 0:
                     Q1[x,z,t] = original[5*x*Lz + 5*z + 5*t*Lx*Lz]
@@ -284,9 +285,9 @@ def writeenergy(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamm
         #enarrayinit = np.array(enarrayinit)
         #print(np.shape(enarrayinit))
 
-    energy = (bulk + splay + twist + timeen + surface)# / (Lz*Lt)
+    energy = (bulkenarr + splay + twist + timeen + surface)# / (Lz*Lt)
 
-    calculategrad.calcgrad(guess,original,GradE,sig,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
+    calculategrad.calcgrad(guess,original,GradE,sig,Lx,Lz,Lt,ks,kt,q0,z,t,s,alpha,beta,gamma,a,b,c,Q1,Q2,Q3,Q4,Q5,ws,timeen,splay,twist,bend,surface,bulk)
     np.savetxt("energyevolution.dat", enarrayinit)
     np.savetxt("bulkevolution.dat", bulkenarr)
     np.savetxt("twistevolution.dat", twistenarr)
